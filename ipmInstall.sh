@@ -28,15 +28,15 @@ check_and_install() {
         # Check for sudo
         if command -v sudo &> /dev/null; then
             sudo apt-get update
-            sudo apt-get install $INSTALL_CMD
+            sudo apt-get install -yy $INSTALL_CMD
         else
             echo "Sudo command is not available, attempting to install without sudo..."
             apt-get update
-            apt-get install $INSTALL_CMD
+            apt-get install -yy $INSTALL_CMD
         fi
     else
         echo "$PACKAGE is already installed"
-    fi
+    fix
 }
 
 # Check and install unzip
@@ -44,6 +44,7 @@ check_and_install unzip unzip
 
 # Check and install libicu
 check_and_install libicu libicu-dev
+
 
 # Select the appropriate file to download
 if [ "$DOTNET_INSTALLED" -eq 0 ]; then
