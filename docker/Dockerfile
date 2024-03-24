@@ -1,5 +1,5 @@
-FROM debian
+FROM debian:bullseye
 
 RUN apt-get update && apt-get install -y \
     git \
-    software-properties-common 
+    wget

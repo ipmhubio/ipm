@@ -36,9 +36,8 @@ check_and_install() {
         fi
     else
         echo "$PACKAGE is already installed"
-    fix
+    fi
 }
-
 # Check and install unzip
 check_and_install unzip unzip
 
