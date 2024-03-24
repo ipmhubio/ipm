@@ -18,41 +18,64 @@ set -e
 
 # Function to check if a package is installed and install it if not
 check_and_install() {
-    PACKAGE=$1
-    INSTALL_CMD=$2
+    PACKAGE=$1 # The package to check
+    INSTALL_CMD=$2 # The command to install the package
+    IS_LIB=$3 # true if the package is a library, false otherwise
 
-    if ! command -v $PACKAGE &> /dev/null; then
-        echo "$PACKAGE could not be found"
-        echo "Installing $PACKAGE..."
-
-        # Check for sudo
-        if command -v sudo &> /dev/null; then
-            sudo apt-get update
-            sudo apt-get install -yy $INSTALL_CMD
+    if [ "$IS_LIB" = true ] ; then
+        if ! ldconfig -p | grep $PACKAGE &> /dev/null; then
+            echo "$PACKAGE could not be found"
+            echo "Installing $PACKAGE..."
+            install_package $INSTALL_CMD
         else
-            echo "Sudo command is not available, attempting to install without sudo..."
-            apt-get update
-            apt-get install -yy $INSTALL_CMD
+            echo "$PACKAGE is already installed"
         fi
     else
-        echo "$PACKAGE is already installed"
+        if ! command -v $PACKAGE &> /dev/null; then
+            echo "$PACKAGE could not be found"
+            echo "Installing $PACKAGE..."
+            install_package $INSTALL_CMD
+        else
+            echo "$PACKAGE is already installed"
+        fi
     fi
 }
-# Check and install unzip
-check_and_install unzip unzip
 
-# Check and install libicu
-check_and_install libicu libicu-dev
+install_package() {
+    INSTALL_CMD=$1
+
+    # Check for sudo
+    if command -v sudo &> /dev/null; then
+        sudo apt-get update
+        sudo apt-get install $INSTALL_CMD
+    else
+        echo "Sudo command is not available, attempting to install without sudo..."
+        apt-get update
+        apt-get install $INSTALL_CMD
+    fi
+}
+
+
+# Check and install unzip
+check_and_install unzip unzip false
+
 
 
 # Select the appropriate file to download
 if [ "$DOTNET_INSTALLED" -eq 0 ]; then
     if [ "$ARCH" == "x86_64" ]; then
         FILE="ipm-linux-x64-full.zip"
+        # Check and install libicu
+        check_and_install libicu libicu-dev true
     elif [ "$ARCH" == "arm64" ] || [ "$ARCH" == "aarch64" ]; then
         FILE="ipm-linux-arm64-full.zip"
+        # Check and install libicu
+        check_and_install libicu libicu-dev true
     elif [ "$ARCH" == "arm" ]; then
         FILE="ipm-linux-arm-full.zip"
+        # Check and install libicu
+        check_and_install libicu libicu-dev true
+
     fi
 else
     if [ "$ARCH" == "x86_64" ]; then
