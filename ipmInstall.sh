@@ -16,8 +16,6 @@ if [ $? -ne 0 ] || [ -z "$DOTNET_INSTALLED" ]; then
 fi
 set -e
 
-#!/bin/bash
-
 # Function to check if a package is installed and install it if not
 check_and_install() {
     PACKAGE=$1
