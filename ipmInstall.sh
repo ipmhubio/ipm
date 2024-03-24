@@ -10,6 +10,14 @@ ARCH=$(uname -m)
 # Check if .NET 6 runtime is installed
 DOTNET_INSTALLED=$(dotnet --list-runtimes | grep -c 'Microsoft.NETCore.App 6.0')
 
+if ! command -v unzip &> /dev/null
+then
+    echo "unzip could not be found"
+    echo "Installing unzip..."
+    sudo apt-get update
+    sudo apt-get install unzip
+fi
+
 # Select the appropriate file to download
 if [ "$DOTNET_INSTALLED" -eq 0 ]; then
     if [ "$ARCH" == "x86_64" ]; then
@@ -32,3 +40,4 @@ fi
 # Download and install the selected file
 wget https://github.com/ipmhubio/ipm/releases/latest/download/$FILE
 unzip $FILE -d /usr/local/bin
+chmod +x /usr/local/bin/ipm
