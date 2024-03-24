@@ -15,12 +15,23 @@ if [ $? -ne 0 ] || [ -z "$DOTNET_INSTALLED" ]; then
     DOTNET_INSTALLED=0
 fi
 set -e
-if ! command -v unzip &> /dev/null
-then
+
+# Check if unzip is installed
+if ! command -v unzip &> /dev/null; then
     echo "unzip could not be found"
     echo "Installing unzip..."
-    sudo apt-get update
-    sudo apt-get install unzip
+
+    # Check for sudo
+    if command -v sudo &> /dev/null; then
+        sudo apt-get update
+        sudo apt-get install unzip
+    else
+        echo "Sudo command is not available, attempting to install without sudo..."
+        apt-get update
+        apt-get install unzip
+    fi
+else
+    echo "unzip is already installed"
 fi
 
 # Select the appropriate file to download
@@ -56,3 +67,18 @@ fi
 wget https://github.com/ipmhubio/ipm/releases/latest/download/$FILE
 unzip $FILE -d /usr/local/bin
 chmod +x /usr/local/bin/ipm
+
+#CLEANUP
+rm $FILE
+
+# Check if the installation was successful
+if ! command -v ipm &> /dev/null
+then
+    echo "ipm could not be found installation failed"
+    echo "Please check our other installation methods at https://ipmhub.io"
+    exit 1
+else
+    echo "ipm was installed successfully"
+    ipm --version
+    exit 0
+fi
