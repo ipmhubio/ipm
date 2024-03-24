@@ -16,23 +16,36 @@ if [ $? -ne 0 ] || [ -z "$DOTNET_INSTALLED" ]; then
 fi
 set -e
 
-# Check if unzip is installed
-if ! command -v unzip &> /dev/null; then
-    echo "unzip could not be found"
-    echo "Installing unzip..."
+#!/bin/bash
 
-    # Check for sudo
-    if command -v sudo &> /dev/null; then
-        sudo apt-get update
-        sudo apt-get install unzip
+# Function to check if a package is installed and install it if not
+check_and_install() {
+    PACKAGE=$1
+    INSTALL_CMD=$2
+
+    if ! command -v $PACKAGE &> /dev/null; then
+        echo "$PACKAGE could not be found"
+        echo "Installing $PACKAGE..."
+
+        # Check for sudo
+        if command -v sudo &> /dev/null; then
+            sudo apt-get update
+            sudo apt-get install $INSTALL_CMD
+        else
+            echo "Sudo command is not available, attempting to install without sudo..."
+            apt-get update
+            apt-get install $INSTALL_CMD
+        fi
     else
-        echo "Sudo command is not available, attempting to install without sudo..."
-        apt-get update
-        apt-get install unzip
+        echo "$PACKAGE is already installed"
     fi
-else
-    echo "unzip is already installed"
-fi
+}
+
+# Check and install unzip
+check_and_install unzip unzip
+
+# Check and install libicu
+check_and_install libicu libicu-dev
 
 # Select the appropriate file to download
 if [ "$DOTNET_INSTALLED" -eq 0 ]; then
