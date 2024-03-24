@@ -47,11 +47,11 @@ install_package() {
     # Check for sudo
     if command -v sudo &> /dev/null; then
         sudo apt-get update
-        sudo apt-get install $INSTALL_CMD
+        sudo apt-get install -yy $INSTALL_CMD
     else
         echo "Sudo command is not available, attempting to install without sudo..."
         apt-get update
-        apt-get install $INSTALL_CMD
+        apt-get install  -yy $INSTALL_CMD
     fi
 }
 
