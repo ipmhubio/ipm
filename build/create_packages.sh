@@ -1,16 +1,12 @@
 #!/bin/bash
 
 # Check if the script received two arguments
-if [ "$#" -ne 2 ]; then
-    echo "You must enter exactly 2 command line arguments"
+if [ "$#" -ne 1 ]; then
+    echo "You must enter exactly 1 command line arguments"
     exit 1
 fi
-
-# Assign the first argument to a variable named version
-version=$1
-
 # Assign the second argument to a variable named input_path
-input_path=$2
+input_path=$1
 
 # Create the export directory if it doesn't exist
 mkdir -p export
@@ -26,13 +22,13 @@ for dir in "$input_path"/*/ ; do
     # Get the folder name from the directory path
     foldername=$(basename "$dir")
 
-    # Create a zip file with the name ipm-${version}-${foldername}.zip in the export directory
+    # Create a zip file with the name ipm-${foldername}.zip in the export directory
     # Run the zip command from the parent directory of the directory that's being zipped
-    (cd "$dir/.." && zip -r "$export_path/ipm-${version}-${foldername}.zip" "$foldername")
+    (cd "$dir/.." && zip -r "$export_path/ipm-${foldername}.zip" "$foldername")
 
     # Calculate its sha256 hash
-    hash=$(shasum -a 256 "$export_path/ipm-${version}-${foldername}.zip" | awk '{ print $1 }')
+    hash=$(shasum -a 256 "$export_path/ipm-${foldername}.zip" | awk '{ print $1 }')
     
     # Write the filename and hash to the markdown file
-    echo -e "* ipm-${version}-${foldername}.zip\n\t * $hash" >> packages.md
+    echo -e "* ipm-${foldername}.zip\n\t * $hash" >> packages.md
 done

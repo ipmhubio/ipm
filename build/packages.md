@@ -1,0 +1,56 @@
+* ipm-0.5.3-linux-arm.zip
+	 * 598eddede7af49687289c65cd854a71b474e5b7ae81c0220ecae2abf4a1d3b39
+* ipm-0.5.3-linux-arm64.zip
+	 * 677c5453c43e5779200df9a9cfe57ba46b492e76e6d0c98ef04fe0da0b2938eb
+* ipm-0.5.3-linux-x64.zip
+	 * afa95d0a93aef87819ac8ca17280a8767c9b1ef5b6401645585069824b3507bb
+* ipm-0.5.3-win-arm.zip
+	 * 9fed0d834598ef0b5e1a5a7fb8d7db3d68de03a6fa740dd54ae0ec11760faca6
+* ipm-0.5.3-win-arm64.zip
+	 * 0cdb748f3f03adf6f7ecfa50354d5c24492a324829b7cd2f5b60b20a154ac267
+* ipm-0.5.3-win-x64.zip
+	 * 28c922beb10663e2789dd4ad23421e94fc8ca79d8fbe4dd7f5a7fac62df11ead
+* ipm-0.5.3-win-x86.zip
+	 * 66a50117c7720dcc3642db72ec81f2c6785c8a7fe97737832682c7047f2a1388
+* ipm-0.5.3-linux-arm-full.zip
+	 * 44828fead9bd0438bd414e5a789c08a2ee2b9486a6b53040d171ccd71f3a5c66
+* ipm-0.5.3-linux-arm64-full.zip
+	 * cc90e51622d713656d2e36f907944acf572c84bf59dec891a627c0e3185694b2
+* ipm-0.5.3-linux-x64-full.zip
+	 * d64613d4b9cbf94d2e7f1746f7caec50fbddd4b028ccd66a3d532f04b697f811
+* ipm-0.5.3-win-x64-full.zip
+	 * e4ef742bc855283026e89e307708f173132932a783fe12fb08fd4c785600647e
+* ipm-0.5.3-win-x86-full.zip
+	 * ffbe24b4656ee8dfff9c02cdd457a6a9ed13456730ac221dfec5c2f7735678ee
+* ipm-linux-arm.zip
+	 * 1de6f404a3c30be8d23956f231ea1970cfabf783f5c1d2f71df8cc3c621731ff
+* ipm-linux-arm64.zip
+	 * 3c0e5588a866d6d2c42483fb88275a6ab0ee502cba4fc043dccc851f9f5cdd39
+* ipm-linux-x64.zip
+	 * 8fc7078d5ff57c5000a20e565b60daa32a8ddd0cacf9d367f4aec099b630355d
+* ipm-osx-arm64.zip
+	 * 85fcafc424aee25b46746aa7d2faa571f081481835369cfe67599301c671fcc0
+* ipm-osx-x64.zip
+	 * c03581f241fb3cca1139488ea8c9c82c0d8bd46089defdaf958bc10094113786
+* ipm-win-arm.zip
+	 * a95868ce1bebf457f143dab2f906df426dc98c48d5829dc81718b3be0fc5d0c8
+* ipm-win-arm64.zip
+	 * 758a0924c9a9fb35516a91de3065d54a26fd4cf60ef87613d8576fed83a01a23
+* ipm-win-x64.zip
+	 * 5e303bddff9eb697ed0a217542d0b6fad36bd348dea25c92bafddd0d330d3f7f
+* ipm-win-x86.zip
+	 * f7f69c8d1e24a9ae89e72fd92ee447b5ced455b7e5ec4b76daa7a31a4dd65e98
+* ipm-linux-arm-full.zip
+	 * a62b8cb5345744a4b286e91d626286899e99ee05078ceeec32622c81df5e365a
+* ipm-linux-arm64-full.zip
+	 * 028045781b8beeaac67a8c811f26b25d5d8b8c6328ec3a851cffd74fa92b24b7
+* ipm-linux-x64-full.zip
+	 * 2d59b721a74e9df4dc18048e857a490380b365643645e3118ca439bd5b578dc8
+* ipm-osx-64-full.zip
+	 * d809e78c1b370c01d2190b2b1beb33eb9c788ed75df13050fc4ebe867679b824
+* ipm-osx-arm64-full.zip
+	 * 5807ed5cb8bd6cbe188d2aaf1a409702d0c9ad48f128ce3e86381911d38ef36c
+* ipm-win-x64-full.zip
+	 * f7b55cd9c9b3d42118b4700662411feff63d5727a05bab7091b7bd3ae22df36f
+* ipm-win-x86-full.zip
+	 * 0d8ccf2db5a6b3e8c72f5d1ca60347999acd141422b15c053926ed59c35d2add
