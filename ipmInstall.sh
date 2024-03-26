@@ -1,9 +1,5 @@
 #!/bin/bash
 
-# Detect OS and version
-OS=$(lsb_release -si)
-VER=$(lsb_release -sr)
-
 # Detect architecture
 ARCH=$(uname -m)
 
@@ -51,7 +47,7 @@ install_package() {
     else
         echo "Sudo command is not available, attempting to install without sudo..."
         apt-get update
-        apt-get install  -yy $INSTALL_CMD
+        apt-get install -yy $INSTALL_CMD
     fi
 }
 
