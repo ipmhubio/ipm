@@ -4,7 +4,7 @@
 ARCH=$(uname -m)
 
 # Check if .NET 6 runtime is installed
-set +e
+set -e
 
 DOTNET_INSTALLED=$(dotnet --list-runtimes 2>/dev/null | grep -c 'Microsoft.NETCore.App 6.0')
 if [ $? -ne 0 ] || [ -z "$DOTNET_INSTALLED" ]; then
