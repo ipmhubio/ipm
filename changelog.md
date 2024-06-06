@@ -1,5 +1,25 @@
 # Changelog
 
+## 0.5.5 (06/06/2024)
+
+#### IPM 0.5.5 Release Notes
+
+With this release we introduce our solution for life cycle management, read more -> [Tracked workspaces](https://docs.ipmhub.io/docs/tracked_workspaces/home/).
+
+**Fixes**:
+
+**New features**:
+
+- Implemented life cycle management through associations that can be linked to a workspace
+- Added animations and progress reports when calculating local workspace status and synchronizing.
+- Implemented batched retrieval of package metadata for multithreaded retrieval so that the overall response time is significant faster. 
+- Implemented cached package metadata so that retrieving metadata from the same package is only retrieved once from the IPMHub.
+- Changed the status verb in a way that a logged-in user is now required.
+
+**Enhancements**:
+- Improved status retrieval of a workspace by validating the configuration through the IPMHub
+- Improved error handling and messaging when workspace configuration could not be read
+
 ## 0.5.4 (03/23/2024)
 
 #### IPM 0.5.4 Release Notes
