@@ -1,0 +1,70 @@
+name: Create Release
+
+on:
+  push:
+    tags:
+      - '*.*.*'
+
+jobs:
+  create-release:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up Git
+      run: |
+        git config --global user.name 'github-actions[bot]'
+        git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+
+    - name: Extract version from tag
+      id: extract_version
+      run: |
+        VERSION=${GITHUB_REF#refs/tags/}
+        if [[ ! "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+          echo "Tag does not contain a valid semantic version. Exiting."
+          exit 1
+        fi
+        echo "::set-output name=version::$VERSION"
+
+    - name: Check if tag is on main branch
+      id: check_branch
+      run: |
+        BRANCH=$(git branch -r --contains $GITHUB_SHA | grep -w "origin/main" || true)
+        if [ -z "$BRANCH" ]; then
+          echo "::set-output name=is_main::false"
+        else
+          echo "::set-output name=is_main::true"
+        fi
+
+    - name: Create GitHub Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ steps.extract_version.outputs.version }}
+        release_name: ${{ steps.extract_version.outputs.version }}
+        prerelease: ${{ steps.check_branch.outputs.is_main == 'false' }}
+        body_path: ipm-releases/${{ steps.extract_version.outputs.version }}/releasenotes.md
+
+    - name: Upload Release Assets
+      uses: actions/upload-release-asset@v1
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ipm-releases/${{ steps.extract_version.outputs.version }}/*
+        asset_name: $(basename ${{ steps.upload-release-asset.outputs.asset_path }})
+        asset_content_type: application/octet-stream
+
+    - name: Update Changelog
+      run: |
+        VERSION=${{ steps.extract_version.outputs.version }}
+        RELEASE_NOTES="ipm-releases/${VERSION}/releasenotes.md"
+        CHANGELOG="changelog.md"
+        NEW_NOTES=$(awk '/^----/{exit}1' $RELEASE_NOTES)
+        echo -e "\n\n## ${VERSION} ($(date +%m/%d/%Y))\n" >> $CHANGELOG
+        echo "$NEW_NOTES" >> $CHANGELOG
+        git add $CHANGELOG
+        git commit -m "Update changelog for version ${VERSION}"
+        git push
