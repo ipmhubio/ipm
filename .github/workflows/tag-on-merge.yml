@@ -55,4 +55,4 @@ jobs:
       run: |
         BRANCH_NAME=${{ env.branch_name }}
         git tag "$BRANCH_NAME"
-        git push origin "$BRANCH_NAME"
+        git push https://x-access-token:${{ steps.auth.outputs.token }}@github.com/${{ github.repository }} "$BRANCH_NAME"
