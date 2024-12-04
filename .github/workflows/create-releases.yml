@@ -70,13 +70,6 @@ jobs:
         prerelease: ${{ steps.determine_prerelease.outputs.prerelease }}
         body_path: ipm-releases/${{ steps.extract_version.outputs.main_version }}/releasenotes.md
 
-    - name: Install GitHub CLI
-      run: |
-        sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-key C99B11DEB97541F0
-        sudo apt-add-repository https://cli.github.com/packages
-        sudo apt update
-        sudo apt install gh -y
-
     - name: Upload Release Assets
       env:
         GH_TOKEN: ${{ steps.auth.outputs.token }}
