@@ -12,6 +12,9 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
+      with:
+        fetch-depth: 0 # Fetch all history so that we can checkout the tag
+        ref: ${{ github.ref }} # Checkout the specific tag
 
     - name: Set up Git
       run: |
