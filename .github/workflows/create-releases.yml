@@ -22,12 +22,11 @@ jobs:
       id: extract_version
       run: |
         VERSION=${GITHUB_REF#refs/tags/}
-        if [[ ! "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+        if [[ ! "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-rc[0-9]+)?$ ]]; then
           echo "Tag does not contain a valid semantic version. Exiting."
           exit 1
         fi
         echo "::set-output name=version::$VERSION"
-
     - name: Check if tag is on main branch
       id: check_branch
       run: |
@@ -38,6 +37,15 @@ jobs:
           echo "::set-output name=is_main::true"
         fi
 
+    - name: Determine if prerelease
+      id: determine_prerelease
+      run: |
+        if [[ "${{ steps.extract_version.outputs.version }}" =~ -rc[0-9]*$ ]]; then
+          echo "::set-output name=prerelease::true"
+        else
+          echo "::set-output name=prerelease::${{ steps.check_branch.outputs.is_main == 'false' }}"
+        fi
+
     - name: Create GitHub Release
       id: create_release
       uses: actions/create-release@v1
@@ -46,7 +54,7 @@ jobs:
       with:
         tag_name: ${{ steps.extract_version.outputs.version }}
         release_name: ${{ steps.extract_version.outputs.version }}
-        prerelease: ${{ steps.check_branch.outputs.is_main == 'false' }}
+        prerelease: ${{ steps.determine_prerelease.outputs.prerelease }}
         body_path: ipm-releases/${{ steps.extract_version.outputs.version }}/releasenotes.md
 
     - name: Upload Release Assets
