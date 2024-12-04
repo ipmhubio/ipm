@@ -49,11 +49,18 @@ jobs:
           echo "::set-output name=prerelease::${{ steps.check_branch.outputs.is_main == 'false' }}"
         fi
 
+    - name: Authenticate with GitHub App
+      id: auth
+      uses: tibdex/github-app-token@v1
+      with:
+        app_id: ${{ secrets.APP_ID }}
+        private_key: ${{ secrets.PRIVATE_KEY }}
+
     - name: Create GitHub Release
       id: create_release
       uses: actions/create-release@v1
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ steps.auth.outputs.token }}
       with:
         tag_name: ${{ steps.extract_version.outputs.version }}
         release_name: ${{ steps.extract_version.outputs.version }}
