@@ -1,5 +1,16 @@
 # Changelog
 
+#### IPM 0.6.0 Release Notes
+We've upgraded to .NET 8.0, fine-tuned our CLI banner controls, and optimized error handling and dependencies. 
+
+**New features**:
+- Implemented possibility to remove the BANNER when executing the CLI through environment variable `IPMHUBCLI_BANNER_DISABLED` and value `TRUE`.
+
+**Enhancements**:
+- Upgraded the .NET SDK to 8.0 LTS.
+- Improved error message when a tracked workspace could not be found.
+- Removing unneeded or badly maintained third party packages.
+
 ## 0.5.5 (06/06/2024)
 
 #### IPM 0.5.5 Release Notes

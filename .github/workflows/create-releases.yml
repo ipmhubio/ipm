@@ -79,17 +79,17 @@ jobs:
           gh release upload ${{ steps.extract_version.outputs.version }} "$file" --clobber
         done
 
-    - name: Update Changelog
-      env:
-        GITHUB_TOKEN: ${{ steps.auth.outputs.token }}
-      run: |
-        VERSION=${{ steps.extract_version.outputs.version }}
-        MAIN_VERSION=${{ steps.extract_version.outputs.main_version }}
-        RELEASE_NOTES="ipm-releases/${MAIN_VERSION}/releasenotes.md"
-        CHANGELOG="changelog.md"
-        NEW_NOTES=$(awk '/^----/{exit}1' $RELEASE_NOTES)
-        echo -e "\n\n## ${VERSION} ($(date +%m/%d/%Y))\n" >> $CHANGELOG
-        echo "$NEW_NOTES" >> $CHANGELOG
-        git add $CHANGELOG
-        git commit -m "Update changelog for version ${VERSION}"
-        git push origin HEAD:${{ github.ref_name }}
+    # - name: Update Changelog
+    #   env:
+    #     GITHUB_TOKEN: ${{ steps.auth.outputs.token }}
+    #   run: |
+    #     VERSION=${{ steps.extract_version.outputs.version }}
+    #     MAIN_VERSION=${{ steps.extract_version.outputs.main_version }}
+    #     RELEASE_NOTES="ipm-releases/${MAIN_VERSION}/releasenotes.md"
+    #     CHANGELOG="changelog.md"
+    #     NEW_NOTES=$(awk '/^----/{exit}1' $RELEASE_NOTES)
+    #     echo -e "\n\n## ${VERSION} ($(date +%m/%d/%Y))\n" >> $CHANGELOG
+    #     echo "$NEW_NOTES" >> $CHANGELOG
+    #     git add $CHANGELOG
+    #     git commit -m "Update changelog for version ${VERSION}"
+    #     git push origin HEAD:${{ github.ref_name }}
