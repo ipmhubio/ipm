@@ -90,4 +90,4 @@ jobs:
         echo "$NEW_NOTES" >> $CHANGELOG
         git add $CHANGELOG
         git commit -m "Update changelog for version ${VERSION}"
-        git push
+        git push origin HEAD:${{ github.ref_name }}
