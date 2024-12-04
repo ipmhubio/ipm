@@ -1,0 +1,95 @@
+name: Create Release
+
+on:
+  push:
+    tags:
+      - '*.*.*'
+
+jobs:
+  create-release:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0 # Fetch all history so that we can checkout the tag
+        ref: ${{ github.ref }} # Checkout the specific tag
+
+    - name: Set up Git
+      run: |
+        git config --global user.name 'github-actions[bot]'
+        git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+
+    - name: Extract version from tag
+      id: extract_version
+      run: |
+        VERSION=${GITHUB_REF#refs/tags/}
+        if [[ ! "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-rc[0-9]+)?$ ]]; then
+          echo "Tag does not contain a valid semantic version. Exiting."
+          exit 1
+        fi
+        MAIN_VERSION=$(echo "$VERSION" | sed -E 's/-rc[0-9]+$//')
+        echo "::set-output name=version::$VERSION"
+        echo "::set-output name=main_version::$MAIN_VERSION"
+
+    - name: Check if tag is on main branch
+      id: check_branch
+      run: |
+        BRANCH=$(git branch -r --contains $GITHUB_SHA | grep -w "origin/main" || true)
+        if [ -z "$BRANCH" ]; then
+          echo "::set-output name=is_main::false"
+        else
+          echo "::set-output name=is_main::true"
+        fi
+
+    - name: Determine if prerelease
+      id: determine_prerelease
+      run: |
+        if [[ "${{ steps.extract_version.outputs.version }}" =~ -rc[0-9]*$ ]]; then
+          echo "::set-output name=prerelease::true"
+        else
+          echo "::set-output name=prerelease::${{ steps.check_branch.outputs.is_main == 'false' }}"
+        fi
+
+    - name: Authenticate with GitHub App
+      id: auth
+      uses: tibdex/github-app-token@v1
+      with:
+        app_id: ${{ secrets.APP_ID }}
+        private_key: ${{ secrets.PRIVATE_KEY }}
+
+    - name: Create GitHub Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ steps.auth.outputs.token }}
+      with:
+        tag_name: ${{ steps.extract_version.outputs.version }}
+        release_name: ${{ steps.extract_version.outputs.version }}
+        prerelease: ${{ steps.determine_prerelease.outputs.prerelease }}
+        body_path: ipm-releases/${{ steps.extract_version.outputs.main_version }}/releasenotes.md
+
+    - name: Upload Release Assets
+      env:
+        GH_TOKEN: ${{ steps.auth.outputs.token }}
+      run: |
+        for file in ipm-releases/${{ steps.extract_version.outputs.main_version }}/*; do
+          echo "Uploading $file..."
+          gh release upload ${{ steps.extract_version.outputs.version }} "$file" --clobber
+        done
+
+    # - name: Update Changelog
+    #   env:
+    #     GITHUB_TOKEN: ${{ steps.auth.outputs.token }}
+    #   run: |
+    #     VERSION=${{ steps.extract_version.outputs.version }}
+    #     MAIN_VERSION=${{ steps.extract_version.outputs.main_version }}
+    #     RELEASE_NOTES="ipm-releases/${MAIN_VERSION}/releasenotes.md"
+    #     CHANGELOG="changelog.md"
+    #     NEW_NOTES=$(awk '/^----/{exit}1' $RELEASE_NOTES)
+    #     echo -e "\n\n## ${VERSION} ($(date +%m/%d/%Y))\n" >> $CHANGELOG
+    #     echo "$NEW_NOTES" >> $CHANGELOG
+    #     git add $CHANGELOG
+    #     git commit -m "Update changelog for version ${VERSION}"
+    #     git push origin HEAD:${{ github.ref_name }}

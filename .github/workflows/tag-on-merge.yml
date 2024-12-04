@@ -1,0 +1,58 @@
+name: Tag on Merge
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  tag-on-merge:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+
+    - name: Authenticate with GitHub App
+      id: auth
+      uses: tibdex/github-app-token@v1
+      with:
+        app_id: ${{ secrets.APP_ID }}
+        private_key: ${{ secrets.PRIVATE_KEY }}
+
+    - name: Set up Git
+      run: |
+        git config --global user.name 'github-actions[bot]'
+        git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+
+    - name: Get the latest commit message
+      id: get_commit_message
+      run: |
+        COMMIT_MESSAGE=$(git log -1 --pretty=%B)
+        echo "commit_message=$COMMIT_MESSAGE" >> $GITHUB_ENV
+
+    - name: Extract branch name from commit message
+      id: extract_branch_name
+      run: |
+        BRANCH_NAME=$(echo "${{ env.commit_message }}" | grep -oP '(?<=from ).*')
+        echo "branch_name=$BRANCH_NAME" >> $GITHUB_ENV
+
+    - name: Check if branch name is a semantic version
+      id: check_semver
+      run: |
+        BRANCH_NAME=${{ env.branch_name }}
+        if [[ "$BRANCH_NAME" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+          echo "is_semver=true" >> $GITHUB_ENV
+        else
+          echo "is_semver=false" >> $GITHUB_ENV
+
+    - name: Create tag if branch name is a semantic version
+      if: env.is_semver == 'true'
+      env:
+        GITHUB_TOKEN: ${{ steps.auth.outputs.token }}
+      run: |
+        BRANCH_NAME=${{ env.branch_name }}
+        git tag "$BRANCH_NAME"
+        git push https://x-access-token:${{ steps.auth.outputs.token }}@github.com/${{ github.repository }} "$BRANCH_NAME"
