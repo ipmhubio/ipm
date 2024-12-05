@@ -1,6 +1,12 @@
 name: Create Release
 
 on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to release'
+        required: false
+
   push:
     tags:
       - '*.*.*'
@@ -21,12 +27,12 @@ jobs:
         git config --global user.name 'github-actions[bot]'
         git config --global user.email 'github-actions[bot]@users.noreply.github.com'
 
-    - name: Extract version from tag
+    - name: Extract version from tag or input
       id: extract_version
       run: |
-        VERSION=${GITHUB_REF#refs/tags/}
+        VERSION=${{ github.event.inputs.version || github.ref_name }}
         if [[ ! "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-rc[0-9]+)?$ ]]; then
-          echo "Tag does not contain a valid semantic version. Exiting."
+          echo "Version does not contain a valid semantic version. Exiting."
           exit 1
         fi
         MAIN_VERSION=$(echo "$VERSION" | sed -E 's/-rc[0-9]+$//')
