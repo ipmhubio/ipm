@@ -1,5 +1,5 @@
 #!/bin/bash
-
+#./build/rename_packages.sh /Users/bas/Downloads/IPM-CLI-0.6.0
 # Check if the script received at least one argument
 if [ "$#" -lt 1 ]; then
     echo "You must enter at least 1 command line argument"
@@ -20,7 +20,7 @@ for input_folder in "$@" ; do
                 # Extract the version number
                 version=${BASH_REMATCH[1]}
                 # Remove the -cli-<version>- part from the file name
-                new_name=$(echo "$base_name" | sed -E 's/-cli-[0-9]+\.[0-9]+\.[0-9]+-//')
+                new_name=$(echo "$base_name" | sed -E 's/cli-[0-9]+\.[0-9]+\.[0-9]+-//')
                 # Create the ipm-releases/{version} directory if it doesn't exist
                 mkdir -p "ipm-releases/$version"
                 # Copy and rename the file to the ipm-releases/{version} directory
