@@ -60,26 +60,26 @@ check_and_install unzip unzip false
 # Select the appropriate file to download
 if [ "$DOTNET_INSTALLED" -eq 0 ]; then
     if [ "$ARCH" == "x86_64" ]; then
-        FILE="ipm-linux-x64-full.zip"
+        FILE="ipm-linux-x64-full.tar.gz"
         # Check and install libicu
         check_and_install libicu libicu-dev true
     elif [ "$ARCH" == "arm64" ] || [ "$ARCH" == "aarch64" ]; then
-        FILE="ipm-linux-arm64-full.zip"
+        FILE="ipm-linux-arm64-full.tar.gz"
         # Check and install libicu
         check_and_install libicu libicu-dev true
     elif [ "$ARCH" == "arm" ]; then
-        FILE="ipm-linux-arm-full.zip"
+        FILE="ipm-linux-arm-full.tar.gz"
         # Check and install libicu
         check_and_install libicu libicu-dev true
 
     fi
 else
     if [ "$ARCH" == "x86_64" ]; then
-        FILE="ipm-linux-x64.zip"
+        FILE="ipm-linux-x64.tar.gz"
     elif [ "$ARCH" == "arm64" ] || [ "$ARCH" == "aarch64" ]; then
-        FILE="ipm-linux-arm64.zip"
+        FILE="ipm-linux-arm64.tar.gz"
     elif [ "$ARCH" == "arm" ]; then
-        FILE="ipm-linux-arm.zip"
+        FILE="ipm-linux-arm.tar.gz"
     fi
 fi
 
