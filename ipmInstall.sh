@@ -95,7 +95,7 @@ fi
 
 # Download and install the selected file
 wget https://github.com/ipmhubio/ipm/releases/latest/download/$FILE
-tar -xzf $FILE -C /usr/local/bin
+tar -xzf $FILE -C /usr/bin
 chmod +x /usr/bin/ipm
 
 #CLEANUP
