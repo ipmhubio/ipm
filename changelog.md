@@ -1,5 +1,63 @@
 # Changelog
 
+#### IPM 0.8.0 Release Notes
+
+Major update with the following improvements and fixes:
+
+**New features**:
+- **Introduced the export functionality**
+  - New verb `export` which gives the option to export an existing IPMHub package, without nested package support, to a selected location without the need to create an IPM workspace first.
+- **Introduced the build functionality**
+  - New verb `build` which gives the option to create a build of an existing folder which reflects exact the same output as when it would be selected for publication.
+  - Verb `build` has the argument `--dry-run` which shows the contents of the build that would be generated without the need to output the files.
+- **Updated maximum depth of nested workspaces**
+  - Enlarged the maximum depth of nested workspaces to 8, which was 5.
+ 
+- **Added additional filtering options when searching or listing packages**
+  - New argument `--visibility` on the `list` and `search` verb which gives the option to filter specifically public, hybrid or private packages or a combination of these options.
+  - New argument `--type` on the `list` and `search` verb which gives the option to filter on a specific content type.
+- **Introduced the option to sync multiple packages at once**
+  - New argument `--packages` on the `sync` verb which gives the option to only sync a list of specific packages within the workspace.
+- **Introduced the option to add multiple packages at once**
+  - New argument `--packages` on the `add` verb which gives the option to add multiple packages with their latest version to a workspace.
+- **Added version check**
+  - On interactive sessions, the CLI now checks every 24 hours if there is a new version available.
+- **Upgraded to latest version of dependencies**
+  - Upgraded CLI dependency packages to their latest version.
+
+**Bug fixes**:
+- **Fixed invalid path configuration for package working folders.**
+  - Removed the option to traverse / configure package working folders outside the workspace folder.
+- **Fixed synchronization issues with workspaces with more then 5 packages.**
+  - When a workspace was synchronized with more then 5 packages, errors could occur. This is resolved.
+
+#### IPM 0.7.0 Release Notes
+
+This release comes with the implementation of client secrets, which enables you to integrate IPM directly into your CI/CD workflow.
+More information about client secrets can be found on our [docs](https://docs.ipmhub.io/docs) page.
+
+**New features**:
+- **Added support for non-interactive authentication using client secrets.**
+
+  - New arguments: `--non-interactive` and `--client-secrets` for authentication without user input.
+  - Introduced environment variable `IPM_CLIENT_SECRETS` to securely pass client secrets.
+  - Enables automated authentication scenarios, such as CI/CD pipelines.
+  
+- **Improved verb help text.**
+  - Updated descriptions for several verbs to improve clarity.
+
+**Bug fixes**:
+
+- **Fixed expired context warnings.**
+  - IPM now correctly warns users before proceeding with an expired context.
+
+- **Fixed `config` verb registration issue.**
+  - Re-registering IPM in a different folder now correctly updates the environment PATH.
+  
+  **Fixed exitcode for non-problematic actions**
+  - When executing the binary without verbs or verbs `--version`, `--help` or `verb --help` an exitcode 0 is now returned.
+
+
 #### IPM 0.6.0 Release Notes
 We've upgraded to .NET 8.0, fine-tuned our CLI banner controls, and optimized error handling and dependencies. 
 
