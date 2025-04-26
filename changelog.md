@@ -1,5 +1,26 @@
 # Changelog
 
+#### IPM 0.9.0 Release Notes
+
+Major update with the following improvements and fixes:
+
+**New features**:
+- **Improved several verb help texts**
+  - Updated descriptions for verbs to enhance clarity.
+- **Added verb help links to the official docs**
+  - Help text now includes direct links to relevant documentation.
+- **Improved verb cache functionality**
+  - Enhanced caching mechanisms for improved performance.
+
+**Bug fixes**:
+- **Fixed issue with non-combinable verb parameters when non-interactive is required**
+  - Resolved conflicts between parameters that couldn't be used together in non-interactive mode.
+
+**Changes**:
+- **Removed verb config**
+  - The `config` verb has been deprecated and removed from this version.
+- **Removed global shared --version parameter**
+  - The global `--version` parameter has been removed. Use the standalone `version` command instead.
 #### IPM 0.8.0 Release Notes
 
 Major update with the following improvements and fixes:
