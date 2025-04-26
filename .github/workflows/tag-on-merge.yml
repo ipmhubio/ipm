@@ -33,11 +33,11 @@ jobs:
         COMMIT_MESSAGE=$(git log -1 --pretty=%B)
         echo "commit_message=$COMMIT_MESSAGE" >> $GITHUB_ENV
 
-    - name: Extract branch name from commit message
-      id: extract_branch_name
+    - name: Extract semantic version from commit message
+      id: extract_semver
       run: |
-        BRANCH_NAME=$(echo "${{ env.commit_message }}" | grep -oP '(?<=from ).*')
-        echo "branch_name=$BRANCH_NAME" >> $GITHUB_ENV
+        VERSION=$(echo "${{ env.commit_message }}" | grep -oE '[0-9]+\.[0-9]+\.[0-9]+')
+        echo "branch_name=$VERSION" >> $GITHUB_ENV
 
     - name: Check if branch name is a semantic version
       id: check_semver
