@@ -67,7 +67,12 @@ jobs:
     - name: Download artifacts from Azure Blob Storage
       run: |
         mkdir -p "$ARTIFACT_DIR"
-        azcopy copy '${{ secrets.CLI_BLOB_DL_SAS_URL }}/${{ steps.extract_version.outputs.main_version }}' "$ARTIFACT_DIR" --recursive
+        base_url="${{ secrets.CLI_BLOB_DL_SAS_URL }}"
+        version="${{ steps.extract_version.outputs.main_version }}"
+        base_url_pathless="${base_url%%\?*}"    # all before '?'
+        sas_token="${base_url#*\?}"             # all after '?'
+        full_url="$base_url_pathless/$version?$sas_token"
+        azcopy copy "$full_url" "$ARTIFACT_DIR" --recursive
 
     - name: Rename downloaded artifacts
       run: |
