@@ -82,8 +82,13 @@ jobs:
 
         for file in "$dir"/*; do
           base="$(basename "$file")"
-          new_name="${base/-cli-/}"
-          new_name="${new_name/-$plain_version/}"
+
+          # remove '-cli-' en '-<version>' or '-<version>-' from name
+          new_name="$(echo "$base" | sed -E "s/-cli-//; s/-${plain_version}(-|)/-/")"
+
+          # cleanup: double '--' → '-'
+          new_name="$(echo "$new_name" | sed -E 's/--+/-/g')"
+
           mv "$file" "$dir/$new_name"
         done
 
