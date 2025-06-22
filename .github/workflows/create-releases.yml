@@ -82,11 +82,13 @@ jobs:
 
         for file in "$dir"/*; do
           base="$(basename "$file")"
+          plain_version="${version#v}"  # strip eventueel 'v'
 
-          # remove '-cli-' en '-<version>' or '-<version>-' from name
-          new_name="$(echo "$base" | sed -E "s/-cli-//; s/-${plain_version}(-|)/-/")"
+          # verwijder '-cli-' en versienummer met of zonder leading '-'
+          new_name="$(echo "$base" \
+            | sed -E "s/-cli-//; s/-?${plain_version}//")"
 
-          # cleanup: double '--' → '-'
+          # fallback: herstel dubbele '-' naar enkel
           new_name="$(echo "$new_name" | sed -E 's/--+/-/g')"
 
           mv "$file" "$dir/$new_name"
