@@ -36,27 +36,80 @@ jobs:
           exit 1
         fi
         MAIN_VERSION=$(echo "$VERSION" | sed -E 's/-rc[0-9]+$//')
-        echo "::set-output name=version::$VERSION"
-        echo "::set-output name=main_version::$MAIN_VERSION"
+        echo "version=$VERSION" >> $GITHUB_OUTPUT
+        echo "main_version=$MAIN_VERSION" >> $GITHUB_OUTPUT
+        echo "ARTIFACT_DIR=release_artifacts" >> $GITHUB_ENV
 
     - name: Check if tag is on main branch
       id: check_branch
       run: |
         BRANCH=$(git branch -r --contains $GITHUB_SHA | grep -w "origin/main" || true)
         if [ -z "$BRANCH" ]; then
-          echo "::set-output name=is_main::false"
+          echo "is_main=false" >> $GITHUB_OUTPUT
         else
-          echo "::set-output name=is_main::true"
+          echo "is_main=true" >> $GITHUB_OUTPUT
         fi
 
     - name: Determine if prerelease
       id: determine_prerelease
       run: |
         if [[ "${{ steps.extract_version.outputs.version }}" =~ -rc[0-9]*$ ]]; then
-          echo "::set-output name=prerelease::true"
+          echo "prerelease=true" >> $GITHUB_OUTPUT
         else
-          echo "::set-output name=prerelease::${{ steps.check_branch.outputs.is_main == 'false' }}"
+          echo "prerelease=${{ steps.check_branch.outputs.is_main == 'false' }}" >> $GITHUB_OUTPUT
         fi
+
+    - name: Install AzCopy
+      run: |
+        curl -sL https://aka.ms/downloadazcopy-v10-linux | tar -xz
+        sudo mv ./azcopy_linux_amd64_*/azcopy /usr/local/bin/
+
+    - name: Download artifacts from Azure Blob Storage
+      run: |
+        mkdir -p "$ARTIFACT_DIR"
+        base_url="${{ secrets.CLI_BLOB_DL_SAS_URL }}"
+        version="${{ steps.extract_version.outputs.main_version }}"
+        base_url_pathless="${base_url%%\?*}"    # all before '?'
+        sas_token="${base_url#*\?}"             # all after '?'
+        full_url="$base_url_pathless/$version?$sas_token"
+        azcopy copy "$full_url" "$ARTIFACT_DIR" --recursive
+
+    - name: Rename downloaded artifacts
+      run: |
+        version="${{ steps.extract_version.outputs.main_version }}"
+        dir="${{ env.ARTIFACT_DIR }}/${{ steps.extract_version.outputs.main_version }}"
+        plain_version="${version#v}"  # strip 'v' prefix if present
+
+        for file in "$dir"/*; do
+          base="$(basename "$file")"
+          plain_version="${version#v}"  # strip eventueel 'v'
+
+          # verwijder '-cli-' en versienummer met of zonder leading '-'
+          new_name="$(echo "$base" \
+            | sed -E "s/-cli-//; s/-?${plain_version}//")"
+
+          # fallback: herstel dubbele '-' naar enkel
+          new_name="$(echo "$new_name" | sed -E 's/--+/-/g')"
+
+          mv "$file" "$dir/$new_name"
+        done
+
+    - name: Append the hashes to the releasenotes
+      run: |
+        # Append the file hash for each file except for the sha256 files
+        filespath="${{ env.ARTIFACT_DIR }}/${{ steps.extract_version.outputs.main_version }}"
+        release_notes="ipm-releases/${{ steps.extract_version.outputs.main_version }}/releasenotes.md"
+        echo "" >> "$release_notes"
+        echo "----------------------" >> "$release_notes"
+        echo "" >> "$release_notes"
+
+        for file in "$filespath"/* ; do
+            if [[ "$(basename "$file")" != *.sha256 && "$(basename "$file")" != *.md ]]; then
+                file_hash=$(sha256sum "$file" | awk '{ print $1 }')
+                echo "* $(basename "$file")" >> "$release_notes"
+                echo "    * $file_hash" >> "$release_notes"
+            fi
+        done
 
     - name: Authenticate with GitHub App
       id: auth
@@ -65,37 +118,13 @@ jobs:
         app_id: ${{ secrets.APP_ID }}
         private_key: ${{ secrets.PRIVATE_KEY }}
 
-    - name: Create GitHub Release
-      id: create_release
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ steps.auth.outputs.token }}
+    - name: Upload Release Assets
+      uses: softprops/action-gh-release@v2
       with:
         tag_name: ${{ steps.extract_version.outputs.version }}
-        release_name: ${{ steps.extract_version.outputs.version }}
+        name: ${{ steps.extract_version.outputs.version }}
         prerelease: ${{ steps.determine_prerelease.outputs.prerelease }}
         body_path: ipm-releases/${{ steps.extract_version.outputs.main_version }}/releasenotes.md
-
-    - name: Upload Release Assets
+        files: ${{ env.ARTIFACT_DIR }}/${{ steps.extract_version.outputs.main_version }}/*
       env:
-        GH_TOKEN: ${{ steps.auth.outputs.token }}
-      run: |
-        for file in ipm-releases/${{ steps.extract_version.outputs.main_version }}/*; do
-          echo "Uploading $file..."
-          gh release upload ${{ steps.extract_version.outputs.version }} "$file" --clobber
-        done
-
-    # - name: Update Changelog
-    #   env:
-    #     GITHUB_TOKEN: ${{ steps.auth.outputs.token }}
-    #   run: |
-    #     VERSION=${{ steps.extract_version.outputs.version }}
-    #     MAIN_VERSION=${{ steps.extract_version.outputs.main_version }}
-    #     RELEASE_NOTES="ipm-releases/${MAIN_VERSION}/releasenotes.md"
-    #     CHANGELOG="changelog.md"
-    #     NEW_NOTES=$(awk '/^----/{exit}1' $RELEASE_NOTES)
-    #     echo -e "\n\n## ${VERSION} ($(date +%m/%d/%Y))\n" >> $CHANGELOG
-    #     echo "$NEW_NOTES" >> $CHANGELOG
-    #     git add $CHANGELOG
-    #     git commit -m "Update changelog for version ${VERSION}"
-    #     git push origin HEAD:${{ github.ref_name }}
+        GITHUB_TOKEN: ${{ steps.auth.outputs.token }}
