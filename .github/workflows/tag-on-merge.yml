@@ -49,7 +49,8 @@ jobs:
           echo "is_semver=true" >> $GITHUB_ENV
         else
           echo "is_semver=false" >> $GITHUB_ENV
-
+        fi
+        
     - name: Create tag if branch name is a semantic version
       if: env.is_semver == 'true'
       env:
