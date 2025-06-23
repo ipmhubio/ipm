@@ -1,6 +1,6 @@
 ## 0.11.0 (23/06/2025)
 
-IPM 0.11.0 Release Notes  
+IPM 0.11.0 Release Notes 
 A solid update introducing smarter status insights and safer file syncing.
 
 **New features**:
