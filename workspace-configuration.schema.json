@@ -1,4 +1,4 @@
-﻿{
+{
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://ipmhub.local/schemas/workspace-configuration.schema.json",
   "title": "IPM Hub Workspace Configuration",
