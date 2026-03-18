@@ -112,19 +112,28 @@ jobs:
         done
 
     - name: Authenticate with GitHub App
-      id: auth
-      uses: tibdex/github-app-token@v1
+      id: app-token
+      uses: actions/create-github-app-token@v3
       with:
-        app_id: ${{ secrets.APP_ID }}
-        private_key: ${{ secrets.PRIVATE_KEY }}
+        app-id: ${{ secrets.APP_ID }}
+        private-key: ${{ secrets.PRIVATE_KEY }}
+        owner: ${{ github.repository_owner }}
+        repositories: |
+          ipm
 
+    - name: Verify release API access
+      env:
+        GH_TOKEN: ${{ steps.app-token.outputs.token }}
+      run: |
+        gh api repos/${{ github.repository }}/releases/tags/${{ steps.extract_version.outputs.version }} || true
+        
     - name: Upload Release Assets
       uses: softprops/action-gh-release@v2
       with:
+        token: ${{ steps.app-token.outputs.token }}
         tag_name: ${{ steps.extract_version.outputs.version }}
         name: ${{ steps.extract_version.outputs.version }}
         prerelease: ${{ steps.determine_prerelease.outputs.prerelease }}
         body_path: ipm-releases/${{ steps.extract_version.outputs.main_version }}/releasenotes.md
         files: ${{ env.ARTIFACT_DIR }}/${{ steps.extract_version.outputs.main_version }}/*
-      env:
-        GITHUB_TOKEN: ${{ steps.auth.outputs.token }}
+
